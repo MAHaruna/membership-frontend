@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createMember } from "../services/memberService";
-import "./MemberForm.css";
+import {
+  getStates,
+  getZones,
+  getLGAs,
+  getWards,
+  getPollingUnits,
+} from "../services/locationService";
 
 function MemberForm({ onSuccess }) {
   const [form, setForm] = useState({
@@ -15,26 +21,42 @@ function MemberForm({ onSuccess }) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+
+  // dropdown data
+  const [states, setStates] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [lgas, setLgas] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [pollingUnits, setPollingUnits] = useState([]);
+
+  useEffect(() => {
+    loadLocations();
+  }, []);
+
+  const loadLocations = async () => {
+    try {
+      setStates(await getStates());
+      setZones(await getZones());
+      setLgas(await getLGAs());
+      setWards(await getWards());
+      setPollingUnits(await getPollingUnits());
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       await createMember(form);
+      alert("Member created successfully ✅");
 
-      setMessage("Member created successfully ✅");
-
-      // reset form
       setForm({
         full_name: "",
         phone_number: "",
@@ -46,102 +68,94 @@ function MemberForm({ onSuccess }) {
         polling_unit: "",
       });
 
-      // callback to parent (dashboard/list refresh)
       if (onSuccess) onSuccess();
-
     } catch (err) {
       console.error(err);
-      setMessage("Failed to create member ❌");
+      alert("Error creating member ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="member-form-container">
+    <form onSubmit={handleSubmit}>
 
-      <form onSubmit={handleSubmit} className="member-form">
+      <input
+        name="full_name"
+        placeholder="Full Name"
+        onChange={handleChange}
+        value={form.full_name}
+      />
 
-        <input
-          type="text"
-          name="full_name"
-          placeholder="Full Name"
-          value={form.full_name}
-          onChange={handleChange}
-          required
-        />
+      <input
+        name="phone_number"
+        placeholder="Phone"
+        onChange={handleChange}
+        value={form.phone_number}
+      />
 
-        <input
-          type="text"
-          name="phone_number"
-          placeholder="Phone Number"
-          value={form.phone_number}
-          onChange={handleChange}
-          required
-        />
+      <input
+        name="email"
+        placeholder="Email"
+        onChange={handleChange}
+        value={form.email}
+      />
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-        />
+      {/* STATE */}
+      <select name="state" onChange={handleChange} value={form.state}>
+        <option value="">Select State</option>
+        {states.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.name}
+          </option>
+        ))}
+      </select>
 
-        <input
-          type="text"
-          name="state"
-          placeholder="State ID"
-          value={form.state}
-          onChange={handleChange}
-          required
-        />
+      {/* ZONE */}
+      <select name="senatorial_zone" onChange={handleChange} value={form.senatorial_zone}>
+        <option value="">Select Zone</option>
+        {zones.map((z) => (
+          <option key={z.id} value={z.id}>
+            {z.name}
+          </option>
+        ))}
+      </select>
 
-        <input
-          type="text"
-          name="senatorial_zone"
-          placeholder="Senatorial Zone ID"
-          value={form.senatorial_zone}
-          onChange={handleChange}
-          required
-        />
+      {/* LGA */}
+      <select name="local_government" onChange={handleChange} value={form.local_government}>
+        <option value="">Select LGA</option>
+        {lgas.map((l) => (
+          <option key={l.id} value={l.id}>
+            {l.name}
+          </option>
+        ))}
+      </select>
 
-        <input
-          type="text"
-          name="local_government"
-          placeholder="Local Government ID"
-          value={form.local_government}
-          onChange={handleChange}
-          required
-        />
+      {/* WARD */}
+      <select name="ward" onChange={handleChange} value={form.ward}>
+        <option value="">Select Ward</option>
+        {wards.map((w) => (
+          <option key={w.id} value={w.id}>
+            {w.name}
+          </option>
+        ))}
+      </select>
 
-        <input
-          type="text"
-          name="ward"
-          placeholder="Ward ID"
-          value={form.ward}
-          onChange={handleChange}
-          required
-        />
+      {/* POLLING UNIT */}
+      <select name="polling_unit" onChange={handleChange} value={form.polling_unit}>
+        <option value="">Select Polling Unit</option>
+        {pollingUnits.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name}
+          </option>
+        ))}
+      </select>
 
-        <input
-          type="text"
-          name="polling_unit"
-          placeholder="Polling Unit ID"
-          value={form.polling_unit}
-          onChange={handleChange}
-          required
-        />
+      <button disabled={loading}>
+        {loading ? "Saving..." : "Register Member"}
+      </button>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Register Member"}
-        </button>
-
-      </form>
-
-      {message && <p className="form-message">{message}</p>}
-
-    </div>
+    </form>
   );
 }
 
