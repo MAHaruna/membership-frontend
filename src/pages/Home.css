@@ -6,7 +6,6 @@
   --text-secondary: #475569;
   --border-subtle: #e2e8f0;
   --card-glass: rgba(255, 255, 255, 0.4);
-  
   --spring-transition: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -19,6 +18,7 @@
   }
 }
 
+/* BASE CONTAINER */
 .homepage-container {
   width: 100%;
   max-width: 1280px;
@@ -26,20 +26,22 @@
   padding: 60px 24px;
   box-sizing: border-box;
   position: relative;
+  overflow: hidden; /* Prevents unwanted bounce or horizontal scrolling on mobile */
 }
 
-/* HIGH-END AMBIENT DEPTH FIELDS */
+/* HIGH-END BACKGROUND DEPTH BLURS */
 .ambient-blur-one, .ambient-blur-two {
   position: absolute;
   border-radius: 50%;
   filter: blur(160px);
   z-index: -1;
   opacity: 0.35;
+  pointer-events: none;
 }
 .ambient-blur-one { top: -10%; left: -5%; width: 500px; height: 500px; background: rgba(16, 185, 129, 0.15); }
 .ambient-blur-two { bottom: -5%; right: 0; width: 400px; height: 400px; background: rgba(14, 165, 233, 0.1); }
 
-/* GRID FRAMEWORK SETUP */
+/* MAIN GRID FRAMEWORK */
 .premium-split-layout {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -47,7 +49,13 @@
   align-items: center;
 }
 
-/* LEFT INTERACTION TRACK COLUMN */
+/* LEFT COLUMN DESIGN ELEMENT */
+.control-panel-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .minimal-identity-tag {
   display: inline-flex;
   align-items: center;
@@ -97,12 +105,14 @@
   margin: 0 0 40px 0;
 }
 
-/* COMPACT ACTION TRIGGERS */
+/* BUTTON ACTION ROW */
 .action-button-cluster {
   display: flex;
+  flex-wrap: wrap; /* Allows safe button wrapping on intermediate screen sizes */
   align-items: center;
   gap: 16px;
   margin-bottom: 56px;
+  width: 100%;
 }
 
 .action-btn {
@@ -114,15 +124,17 @@
   transition: all 0.3s var(--spring-transition);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .primary-trigger {
   background: var(--text-primary);
-  color: var(--slate-dark);
+  color: var(--slate-light);
 }
 @media (prefers-color-scheme: dark) {
-  .primary-trigger { color: #000000; }
+  .primary-trigger { color: #000000; background: #ffffff; }
 }
 
 .primary-trigger:hover {
@@ -144,13 +156,14 @@
   transform: translateY(-1px);
 }
 
-/* MINIMALIST GEOMETRIC METRIC BLOCKS */
+/* INTERACTIVE METRIC TILES */
 .metric-display-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 24px;
   border-top: 1px solid var(--border-subtle);
   padding-top: 36px;
+  width: 100%;
 }
 
 .metric-card {
@@ -172,7 +185,7 @@
   margin-top: 4px;
 }
 
-/* RIGHT COLUMN: MODERN VISUAL PANELS */
+/* RIGHT COLUMN MEDIA CONSTRAINTS */
 .showcase-banner-side {
   width: 100%;
 }
@@ -180,7 +193,7 @@
 .widescreen-media-frame {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Cinema Standard Widescreen Aspect Ratio */
+  padding-top: 56.25%; /* Fixed aspect ratio box maintains 16:9 structural profile always */
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.15);
@@ -197,14 +210,13 @@
   object-fit: cover;
 }
 
-/* Linear color safety net mask layer over wide view fields */
 .scenic-gradient-gradient {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(15, 23, 42, 0.4) 0%, transparent 100%);
 }
 
-/* PURE FLOATING LOGO INTERFACE LAYER */
+/* CLEAN FLOATING BRAND GLYPH INTERFACE */
 .absolute-logo-overlay {
   position: absolute;
   inset: 0;
@@ -215,39 +227,124 @@
 }
 
 .pure-floating-logo {
-  width: 32%;
+  width: 30%;
+  max-width: 140px; /* Safety barrier preventing logo scaling from dominating layout */
+  min-width: 80px;  /* Visual asset weight fallback protection */
   height: auto;
   object-fit: contain;
-  /* Premium double drop shadow to completely detach transparent logo elements from any photo behind it */
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3)) drop-shadow(0 30px 60px rgba(0, 0, 0, 0.4));
-  transform: translateZ(0);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.25)) drop-shadow(0 25px 50px rgba(0, 0, 0, 0.35));
   animation: smoothFloat 6s ease-in-out infinite;
 }
 
-/* LOGO FLOAT ANIMATION */
 @keyframes smoothFloat {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
-/* SCREEN WIDTH INTERPOLATION ADAPTATIONS */
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (MOBILE & TABLET ADAPTATION LAYERS)
+   ========================================================================== */
+
+/* LAPTOPS & TABLETS IN LANDSCAPE MODE */
+@media (max-width: 1100px) {
+  .premium-split-layout {
+    gap: 40px;
+  }
+  .hero-statement {
+    font-size: 38px;
+  }
+}
+
+/* PORTRAIT TABLETS & LARGE PHONE COLLAPSE POINT */
 @media (max-width: 992px) {
   .premium-split-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Drop multi-column engine */
     gap: 48px;
   }
-  .hero-statement { font-size: 38px; }
-  .widescreen-media-frame { padding-top: 50%; } /* Slightly wider landscape layout on medium screens */
-  .pure-floating-logo { width: 24%; }
+  
+  /* Reverse natural DOM painting order so widescreen banner scales visually to the top element */
+  .control-panel-side {
+    grid-row: 2; 
+  }
+  
+  .showcase-banner-side {
+    grid-row: 1;
+    max-width: 720px; /* Keep banner execution focused on center alignments */
+    margin: 0 auto;
+  }
+
+  .widescreen-media-frame {
+    padding-top: 50%; /* Tighter cinematic panoramic windowing bounds */
+  }
+
+  .hero-statement {
+    font-size: 40px;
+    text-align: left;
+  }
 }
 
+/* SMARTPHONES & COMPACT SCREEN LAYOUT ENGINE */
 @media (max-width: 640px) {
-  .homepage-container { padding: 32px 16px; }
-  .hero-statement { font-size: 30px; }
-  .action-button-cluster { flex-direction: column; width: 100%; }
-  .action-btn { width: 100%; justify-content: center; }
-  .metric-display-grid { grid-template-columns: 1fr; gap: 24px; }
-  .widescreen-media-frame { padding-top: 56.25%; }
-  .pure-floating-logo { width: 35%; }
+  .homepage-container {
+    padding: 24px 16px;
+  }
+
+  .minimal-identity-tag {
+    margin-bottom: 20px;
+  }
+
+  .hero-statement {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+
+  .hero-context-narrative {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  /* Expand actions out into modern vertical stacked touchpads */
+  .action-button-cluster {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .action-btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px; /* Enhanced hit target size rules for finger tracking layouts */
+  }
+
+  /* Metric cards collapse to modern single file line display elements */
+  .metric-display-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 28px;
+  }
+
+  .metric-card {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 1px dashed var(--border-subtle);
+    padding-bottom: 12px;
+  }
+
+  .metric-card:last-child {
+    border-bottom: none;
+  }
+
+  .metric-tag {
+    margin-top: 0;
+  }
+
+  .widescreen-media-frame {
+    padding-top: 56.25%; /* Pure 16:9 ratio protection scale mapping on small mobile viewports */
+    border-radius: 16px;
+  }
+  
+  .pure-floating-logo {
+    width: 25%;
+  }
 }

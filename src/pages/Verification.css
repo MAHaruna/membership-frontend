@@ -26,10 +26,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px; /* Fluid drop for narrow mobile viewports */
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 }
 
 /* CENTERED APP CARD */
@@ -44,6 +45,8 @@
   padding: 40px 32px;
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
   text-align: center;
+  box-sizing: border-box;
+  overflow: hidden; /* Stops child library components from cracking structural container edges */
 }
 
 .verify-card h1 {
@@ -71,6 +74,8 @@
   background: #020617;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scanner-overlay-laser {
@@ -96,11 +101,13 @@
 #qr-reader {
   border: none !important;
   width: 100% !important;
+  box-sizing: border-box;
 }
 
 #qr-reader__dashboard {
   padding: 20px !important;
   background: #0b1329 !important;
+  box-sizing: border-box;
 }
 
 /* Style the ugly library buttons */
@@ -110,12 +117,15 @@
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: var(--text-main) !important;
-  padding: 10px 18px !important;
+  padding: 12px 20px !important; /* Optimized touch target area sizes */
   border-radius: 10px !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   cursor: pointer;
   transition: var(--transition);
+  max-width: 100%; /* Safety lock against container overflows */
+  white-space: normal !important; /* Permits smart text wrapping inside library control tags */
+  word-break: break-word;
 }
 
 #qr-reader button:hover {
@@ -124,9 +134,15 @@
   transform: translateY(-1px);
 }
 
+#qr-reader__scan_region {
+  width: 100% !important;
+  overflow: hidden;
+}
+
 /* Style the live camera video feedback frame */
 #qr-reader__scan_region video {
   width: 100% !important;
+  height: auto !important; /* Protects correct aspect ratio scaling instead of forcing stretch profiles */
   object-fit: cover !important;
   border-radius: 12px;
 }
@@ -169,6 +185,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  box-sizing: border-box;
 }
 
 /* RESULT PANELS */
@@ -177,6 +194,8 @@
   border-radius: 16px;
   border: 1px solid transparent;
   animation: slideUp 0.5s var(--easing);
+  box-sizing: border-box;
+  word-break: break-word; /* Safety shield preventing lengthy names from breaking container bounds */
 }
 
 @keyframes slideUp {
@@ -221,6 +240,8 @@
   padding: 4px 10px;
   border-radius: 6px;
   display: inline-block;
+  max-width: 100%;
+  overflow-x: auto; /* Handles massive string profiles gracefully */
 }
 
 .result-panel.success .btn {
@@ -261,4 +282,46 @@
 .result-panel.error .btn:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (SMARTPHONE DEPLOYMENT OPTIMIZATIONS)
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .verify-container {
+    padding: 12px; /* Pull margins tighter to give card maximal screen real estate */
+  }
+
+  .verify-card {
+    padding: 32px 20px; /* Reduced internal space so text blocks display perfectly */
+    border-radius: 20px;
+  }
+
+  .verify-card h1 {
+    font-size: 21px;
+  }
+
+  .verify-card .subtitle {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  #qr-reader__dashboard {
+    padding: 12px 8px !important; /* Compresses internal dashboard frames injection bounds */
+  }
+
+  #qr-reader button {
+    width: 100% !important; /* Stack or fill button controls evenly */
+    padding: 14px 16px !important;
+    font-size: 14px !important; /* Matches app layout button tap scaling target standard */
+  }
+
+  .result-panel {
+    padding: 24px 16px;
+  }
+
+  .member-name {
+    font-size: 19px;
+  }
 }
