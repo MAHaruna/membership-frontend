@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
 // This path steps out of components/ and into assets/ with lowercase matching
-import pyaLogo from "../assets/logo.jpg"; 
+import pyaLogo from "../assets/LOGO.jpg"; 
 
 function Navbar() {
   return (
