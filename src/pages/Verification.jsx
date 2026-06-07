@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { verifyMember } from "../services/memberService";
+import "./Verification.css"; // Import the ultra-modern stylesheet
 
 function Verification() {
   const [result, setResult] = useState(null);
@@ -22,7 +23,6 @@ function Verification() {
       scanner.clear();
       setScannerActive(false);
 
-      // ✅ CLEAN QR INPUT (MOST IMPORTANT FIX)
       const membershipId = decodedText
         .replace(import.meta.env.VITE_API_URL || "", "")
         .split("/")
@@ -42,13 +42,9 @@ function Verification() {
     };
   }, [scannerActive]);
 
-  // ✅ VERIFY MEMBER
   const handleVerify = async (membershipId) => {
     if (!membershipId) {
-      setResult({
-        success: false,
-        message: "Invalid QR Code"
-      });
+      setResult({ success: false, message: "Invalid QR Code" });
       return;
     }
 
@@ -57,86 +53,65 @@ function Verification() {
 
     try {
       const data = await verifyMember(membershipId);
-
-      setResult({
-        success: true,
-        member: data
-      });
+      setResult({ success: true, member: data });
     } catch (err) {
       console.error(err);
-
-      setResult({
-        success: false,
-        message: "Member not found or invalid QR"
-      });
+      setResult({ success: false, message: "Member not found or invalid QR" });
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ RESTART SCANNER
   const restartScanner = () => {
     setResult(null);
     setScannerActive(true);
   };
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
+    <div className="verify-container">
+      <div className="verify-card">
+        <h1>QR Verification</h1>
+        <p className="subtitle">Scan member ID pass to authenticate access</p>
 
-      <h1>QR Member Verification</h1>
+        {/* SCANNER CONTAINER */}
+        {scannerActive && (
+          <div className="scanner-wrapper">
+            <div id="qr-reader"></div>
+            <div className="scanner-overlay-laser"></div>
+          </div>
+        )}
 
-      {/* SCANNER */}
-      {scannerActive && (
-        <div
-          id="qr-reader"
-          style={{ width: "300px", margin: "auto" }}
-        ></div>
-      )}
+        {/* LOADING STATE */}
+        {loading && (
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Cryptographic verification in progress...</p>
+          </div>
+        )}
 
-      {/* LOADING */}
-      {loading && <p>Verifying member...</p>}
+        {/* SUCCESS RESULT */}
+        {result?.success && (
+          <div className="result-panel success">
+            <div className="status-badge">VALID MEMBER</div>
+            <h2 className="member-name">{result.member.full_name}</h2>
+            <p className="member-id">{result.member.membership_id}</p>
+            <button className="btn" onClick={restartScanner}>
+              Scan Next Pass
+            </button>
+          </div>
+        )}
 
-      {/* SUCCESS RESULT */}
-      {result?.success && (
-        <div style={{
-          marginTop: "20px",
-          padding: "20px",
-          border: "1px solid #4CAF50",
-          borderRadius: "10px",
-          background: "#f0fff0"
-        }}>
-          <h2>{result.member.full_name}</h2>
-          <p>{result.member.membership_id}</p>
-
-          <h3 style={{ color: "green" }}>
-            VALID MEMBER ✅
-          </h3>
-
-          <button onClick={restartScanner}>
-            Scan Another
-          </button>
-        </div>
-      )}
-
-      {/* ERROR RESULT */}
-      {result && !result.success && (
-        <div style={{
-          marginTop: "20px",
-          padding: "20px",
-          border: "1px solid red",
-          borderRadius: "10px",
-          background: "#fff0f0"
-        }}>
-          <h3 style={{ color: "red" }}>
-            {result.message}
-          </h3>
-
-          <button onClick={restartScanner}>
-            Try Again
-          </button>
-        </div>
-      )}
-
+        {/* ERROR RESULT */}
+        {result && !result.success && (
+          <div className="result-panel error">
+            <div className="status-badge">ACCESS DENIED</div>
+            <h3 className="error-message">{result.message}</h3>
+            <button className="btn" onClick={restartScanner}>
+              Try Again
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

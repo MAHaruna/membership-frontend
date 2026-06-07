@@ -1,0 +1,24 @@
+/* Reset the default browser margin offsets */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc; /* Standard Light Mode App background */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #09090b; /* Seamless Dark Mode background match */
+  }
+}
+
+/* THE FIX: Main content layout container pushes down from under fixed navbar */
+.app-layout {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Creates space exactly equal to the height of your floating navbar + breathing room */
+  padding-top: 100px; 
+}
