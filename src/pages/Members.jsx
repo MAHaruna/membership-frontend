@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMembers } from "../services/memberService";
+import { logout } from "../services/authService"; // ✅ ADDED
 import "./Members.css";
 
 function Members() {
@@ -65,6 +66,12 @@ function Members() {
     navigate(`/verify/${verifyId}`);
   };
 
+  // 🔴 LOGOUT HANDLER
+  const handleLogout = () => {
+    logout(); // clears token
+    navigate("/"); // or "/login" if you have login page
+  };
+
   const activeCount = members.filter((m) => m.is_active).length;
 
   return (
@@ -82,6 +89,11 @@ function Members() {
           <button onClick={exportCSV}>Export</button>
           <button onClick={() => setVerifyOpen(true)}>Verify</button>
           <button onClick={fetchMembers}>Refresh</button>
+
+          {/* 🔴 LOGOUT BUTTON */}
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
         </div>
 
       </div>
@@ -104,7 +116,7 @@ function Members() {
         </div>
       </div>
 
-      {/* LIVE SEARCH (NO BUTTON) */}
+      {/* LIVE SEARCH */}
       <div className="emis-search">
         <input
           placeholder="Search members by name or ID..."
